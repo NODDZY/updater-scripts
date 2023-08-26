@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-:: Set path variables, repository URL, etc.
+:: Set path variables, repository URL, etc
 set dlfile=%temp%\yuzu.zip
 set defdir=yuzu-windows-msvc
 set yuzulastverpath=VERSION
@@ -11,19 +11,25 @@ set link=https://api.github.com/repos/%linkmain%/releases/latest
 
 :: Check last version
 :: If first install (or no VERSION file) set current version to null
-IF NOT EXIST %yuzulastverpath% (set oldver="")
+if NOT EXIST %yuzulastverpath% (set oldver="")
 set /p oldver=<%yuzulastverpath%
 
 :: Get Yuzu version and date from releases/latest
 for /f "tokens=2 delims=, " %%a in ('curl -s %link% ^| findstr /L "tag_name"') do (set ver=%%a)
+:: Simple check for API access
+:: Will trigger if API rate limit exceeded or if user has no internet connection
+if NOT DEFINED ver (
+    echo Error getting GitHub API
+    pause
+    goto :EXIT
+)
 
-:: Show CLI interface
+:: Show CLI menu
 cls
 echo.
 echo ###  ### ##   ##  #######  ##   ##
 echo  ##  ##  ##   ##  ##  ##   ##   ##
 echo   ####   ##   ##     ##    ##   ##
-echo    ##    ##   ##    ##     ##   ##
 echo    ##    ##   ##   ##      ##   ##
 echo    ##    ##   ##  ##   ##  ##   ##
 echo   ####    #####   #######   #####
@@ -54,3 +60,4 @@ goto EXIT
 
 :EXIT
 endlocal
+exit
