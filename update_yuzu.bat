@@ -4,21 +4,21 @@ setlocal
 :: Set path variables, repository URL, etc
 set dlfile=%temp%\yuzu.zip
 set defdir=yuzu-windows-msvc
-set yuzulastverpath=VERSION
+set lastverpath=VERSION
 
-set linkmain=yuzu-emu/yuzu-mainline
-set link=https://api.github.com/repos/%linkmain%/releases/latest
+set repo=yuzu-emu/yuzu-mainline
+set link=https://api.github.com/repos/%repo%/releases/latest
 
-:: Check last version
+:: Get local version
 :: If first install (or no VERSION file) set current version to null
 set oldver=""
-if EXIST %yuzulastverpath% (set /p oldver=<%yuzulastverpath%)
+if exist %lastverpath% (set /p oldver=<%lastverpath%)
 
-:: Get Yuzu version and date from releases/latest
-for /f "tokens=2 delims=, " %%a in ('curl -s %link% ^| findstr /L "tag_name"') do (set ver=%%a)
+:: Get latest version
+for /f "tokens=2 delims= " %%a in ('curl -s %link% ^| findstr /l "tag_name"') do (set ver=%%a)
 :: Simple check for API access
 :: Will trigger if API rate limit exceeded or if user has no internet connection
-if NOT DEFINED ver (
+if not defined ver (
     echo Error getting GitHub API
     pause
     goto :EXIT
@@ -37,15 +37,14 @@ echo.
 if not %oldver% == "" (echo Current version: %oldver%)
 echo Latest version:  %ver%
 echo.
-choice /C:12 /N /M "Do you want to update? [1 - Yes, 2 - Exit]: "
+choice /c:12 /n /m "Do you want to update? [1 - Yes, 2 - Exit]: "
 if errorlevel 2 goto :EXIT
 if errorlevel 1 goto :DOWNLOAD
 
 :DOWNLOAD
 echo Downloading...
-:: Get Yuzu release as .zip from releases/latest
-for /f "tokens=2 delims= " %%a in ('curl -s %link% ^| findstr /L "browser_download_url" ^| findstr /V "debug" ^| findstr /L ".zip"') do (set dl=%%a)
-:: Download file using Invoke-WebRequest command
+:: Download latest release
+for /f "tokens=2 delims= " %%a in ('curl -s %link% ^| findstr /l "browser_download_url" ^| findstr /v "debug" ^| findstr /l ".zip"') do (set dl=%%a)
 if not exist %dlfile% (powershell -command "& {Invoke-WebRequest -Uri %dl% -OutFile %dlfile%}")
 :: Extract downloaded .zip file
 tar -xf %dlfile%
@@ -55,7 +54,7 @@ xcopy .\%defdir%\ .\ /E /H /C /I /Y
 del /f /q %dlfile%
 rmdir /s /q .\%defdir%
 :: Update VERSION file
-echo %ver% > %yuzulastverpath%
+echo %ver% > %lastverpath%
 goto :EXIT
 
 :EXIT
