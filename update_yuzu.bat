@@ -11,8 +11,8 @@ set link=https://api.github.com/repos/%linkmain%/releases/latest
 
 :: Check last version
 :: If first install (or no VERSION file) set current version to null
-if NOT EXIST %yuzulastverpath% (set oldver="")
-set /p oldver=<%yuzulastverpath%
+set oldver=""
+if EXIST %yuzulastverpath% (set /p oldver=<%yuzulastverpath%)
 
 :: Get Yuzu version and date from releases/latest
 for /f "tokens=2 delims=, " %%a in ('curl -s %link% ^| findstr /L "tag_name"') do (set ver=%%a)
@@ -56,7 +56,7 @@ del /f /q %dlfile%
 rmdir /s /q .\%defdir%
 :: Update VERSION file
 echo %ver% > %yuzulastverpath%
-goto EXIT
+goto :EXIT
 
 :EXIT
 endlocal
