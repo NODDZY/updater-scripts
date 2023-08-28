@@ -15,7 +15,8 @@ set oldver=""
 if exist %lastverpath% (set /p oldver=<%lastverpath%)
 
 :: Get latest version
-for /f "tokens=2 delims= " %%a in ('curl -s %link% ^| findstr /l "tag_name"') do (set ver=%%a)
+for /f "tokens=2 delims=, " %%a in ('curl -s %link% ^| findstr /l "tag_name"') do (set ver=%%a)
+set ver=%ver:"=%
 :: Simple check for API access
 :: Will trigger if API rate limit exceeded or if user has no internet connection
 if not defined ver (
@@ -27,12 +28,11 @@ if not defined ver (
 :: Show CLI menu
 cls
 echo.
-echo ###  ### ##   ##  #######  ##   ##
-echo  ##  ##  ##   ##  ##  ##   ##   ##
-echo   ####   ##   ##     ##    ##   ##
-echo    ##    ##   ##   ##      ##   ##
-echo    ##    ##   ##  ##   ##  ##   ##
-echo   ####    #####   #######   #####
+echo ###  ###  ##   ##  #######  ##   ##
+echo  ##  ##   ##   ##  ##  ##   ##   ##
+echo   ####    ##   ##    ###    ##   ##
+echo    ##     ##   ##   ##  ##  ##   ##
+echo   ####     #####   #######   #####
 echo.
 if not %oldver% == "" (echo Current version: %oldver%)
 echo Latest version:  %ver%

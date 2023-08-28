@@ -4,12 +4,13 @@
 Collection of batch scripts (.bat files) to download/update various portable applications on Windows. 
 Requires Windows 10 (v1803) or later.
 
-_**Disclaimer:** This repository and its scripts are made for personal use._
+_This repository and its scripts are made for personal use._
 
 ### Software
 
 * Yuzu (mainline) ([yuzu-emu.org](https://yuzu-emu.org/))
 * Prism Launcher ([prismlauncher.org](https://prismlauncher.org/))
+* Mod Organizer 2 ([nexusmods.com](https://www.nexusmods.com/skyrimspecialedition/mods/6194))
 
 ### Usage
 

@@ -2,10 +2,10 @@
 setlocal
 
 :: Set path variables, repository URL, etc
-set dlfile=%temp%\prism.zip
+set dlfile=%temp%\mo2.7z
 set lastverpath=VERSION
 
-set repo=PrismLauncher/PrismLauncher
+set repo=ModOrganizer2/modorganizer
 set link=https://api.github.com/repos/%repo%/releases/latest
 
 :: Get local version
@@ -27,11 +27,11 @@ if not defined ver (
 :: Show CLI menu
 cls
 echo.
-echo #####   #####   ####  ######  ##   ##
-echo ##  ##  ##  ##   ##   ##      ### ###
-echo #####   #####    ##   ######  ## # ##
-echo ##      ## ##    ##       ##  ##   ##
-echo ##      ##  ##  ####  ######  ##   ##
+echo ##   ##   ####    ####
+echo ### ###  ##  ##  ##  ##
+echo ## # ##  ##  ##     ##
+echo ##   ##  ##  ##   ###
+echo ##   ##   ####   ######
 echo.
 if not %oldver% == "" (echo Current version: %oldver%)
 echo Latest version:  %ver%
@@ -43,11 +43,11 @@ if errorlevel 1 goto :DOWNLOAD
 :DOWNLOAD
 echo Downloading...
 :: Download release
-for /f "tokens=2 delims= " %%a in ('curl -s %link% ^| findstr /l "browser_download_url" ^| findstr /l "MSVC-Portable"') do (set dl=%%a)
+for /f "tokens=2 delims= " %%a in ('curl -s %link% ^| findstr /l "browser_download_url" ^| findstr /v /r "pdbs|uibase|src" ^| findstr /l ".7z"') do (set dl=%%a)
 if not exist %dlfile% (powershell -command "& {Invoke-WebRequest -Uri %dl% -OutFile %dlfile%}")
-:: Extract downloaded .zip file to current folder
-tar -xf %dlfile%
-:: Delete temporary .zip file
+:: Extract downloaded .7z file to current folder using local 7-Zip installation
+7z x %dlfile%
+:: Delete temporary .7z file
 del /f /q %dlfile%
 :: Update VERSION file
 echo %ver% > %lastverpath%
